@@ -48,13 +48,7 @@ sudo apt install yt-dlp  # Ubuntu/Debian
 python3 -m instagram_downloader --help
 ```
 
-### Alternative: Mit pip-Installation
-
-```bash
-# Im Virtual Environment
-pip install -e .
-instagram-downloader --help
-```
+**💡 Das war's! Verwende das Tool mit `python3 -m instagram_downloader`**
 
 **💡 Tipp:** Siehe `QUICKSTART.md` für detaillierte Installationsanweisungen!
 
@@ -98,12 +92,11 @@ python3 -m instagram_downloader all
 ### Grundlegende Syntax
 
 ```bash
-# Nach Installation mit pip
-instagram-downloader <command> [optionen]
-
-# Ohne Installation (direkt als Modul)
+# Empfohlene Methode: Direkt als Modul ausführen
 python3 -m instagram_downloader <command> [optionen]
 ```
+
+**Hinweis:** Der Befehl muss im Virtual Environment ausgeführt werden, falls du eins verwendest.
 
 ### Verfügbare Commands
 
@@ -373,22 +366,27 @@ black instagram_downloader/
 flake8 instagram_downloader/
 ```
 
-## 📝 Direkte Ausführung (empfohlen)
+## 🔧 Alternative: pip-Installation (Optional)
 
-Das Tool kann direkt als Python-Modul ausgeführt werden, ohne Installation:
+Falls du einen globalen Befehl `instagram-downloader` möchtest:
 
 ```bash
-# Tool-Hilfe anzeigen
-python3 -m instagram_downloader --help
+# Im Virtual Environment oder global
+pip install -e .
 
-# Verschiedene Kommandos
-python3 -m instagram_downloader saved
-python3 -m instagram_downloader liked
-python3 -m instagram_downloader own
-python3 -m instagram_downloader all
+# Danach kannst du verwenden:
+instagram-downloader --help
+instagram-downloader saved
+instagram-downloader liked
 ```
 
-Dies ist die **empfohlene Methode**, da sie keine Installation erfordert.
+**Hinweis:** Nach der pip-Installation muss das Virtual Environment ggf. neu geladen werden:
+```bash
+deactivate
+source venv/bin/activate  # Linux/macOS
+```
+
+**Empfohlen bleibt:** `python3 -m instagram_downloader` - funktioniert immer ohne zusätzliche Installation!
 
 ## 🛡️ Hinweise
 

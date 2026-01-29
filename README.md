@@ -1,189 +1,449 @@
-# 📥 Instagram Media Downloader
+# 📥 Instagram Media Downloader v2.0
 
-Ein robustes Python-Skript zum Herunterladen aller **gespeicherten Posts** und **Likes** aus deinem Instagram-Datenexport.
+Ein **professionelles** Python CLI-Tool zum Herunterladen von Instagram-Medien aus deinem Datenexport.
 
-## ✨ Funktionen
+[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-✅ **Automatische Medien-Extraktion** - Lädt echte MP4/JPG-Dateien (keine HTML-Seiten)  
-✅ **Flacher Ordner** - Alle Medien in einem Verzeichnis (`downloads/`)  
-✅ **Fortschrittsbalken** - Zeigt Download-Fortschritt mit `tqdm`  
-✅ **Resume-Funktion** - Startet bei Unterbrechung automatisch fort  
-✅ **CSV-Export** - Metadaten (Titel, Datum, URLs) in übersichtlicher Tabelle  
-✅ **Duplikat-Schutz** - Bereits vorhandene Dateien werden übersprungen  
-✅ **Robuste Fehlerbehandlung** - Fehlgeschlagene Downloads blockieren nicht den Prozess  
+## ✨ Features
+
+✅ **Separate Kategorien** - Download von Saved Posts (Bookmarks), Liked Posts und eigenen Posts  
+✅ **Professionelles CLI** - Intuitive Kommandozeilen-Schnittstelle mit vielen Optionen  
+✅ **Organisierte Struktur** - Automatische Sortierung in separate Ordner (saved/, liked/, own/)  
+✅ **Konfigurierbar** - Via CLI-Argumente, Umgebungsvariablen oder Config-Datei  
+✅ **Robustes Logging** - Farbige Console-Ausgabe + detaillierte Log-Dateien  
+✅ **Retry-Mechanismus** - Automatische Wiederholungsversuche bei Fehlern  
+✅ **Resume-Funktion** - Fortsetzen nach Unterbrechung ohne erneuten Download  
+✅ **CSV-Export** - Detaillierte Metadaten für alle Downloads  
+✅ **Progress-Tracking** - Fortschrittsbalken mit tqdm  
+✅ **Production-Ready** - Fehlerbehandlung, Validierung, saubere Architektur  
 
 ## 📋 Voraussetzungen
 
-### Python-Pakete installieren
+### System-Requirements
+
+- **Python** 3.8 oder höher
+- **yt-dlp** - Für Instagram-Downloads (System-Package oder pip)
+- **tqdm** - Python-Package (wird automatisch installiert)
+
+### 🚀 Schnell-Installation
 
 ```bash
-pip install requests beautifulsoup4 tqdm
+# 1. Repository klonen
+git clone https://github.com/lucmuss/instagram-media-downloader.git
+cd instagram-media-downloader
+
+# 2. Virtual Environment erstellen (empfohlen)
+python3 -m venv venv
+source venv/bin/activate  # Linux/macOS
+
+# 3. Dependencies installieren
+pip install tqdm
+
+# 4. yt-dlp installieren
+sudo apt install yt-dlp  # Ubuntu/Debian
+# oder: pip install yt-dlp
+
+# 5. Fertig! Tool verwenden
+python3 -m instagram_downloader --help
 ```
 
-**Benötigte Pakete:**
-- `requests` - HTTP-Requests
-- `beautifulsoup4` - HTML-Parsing
-- `tqdm` - Fortschrittsbalken
+### Alternative: Mit pip-Installation
 
-## 🚀 Verwendung
+```bash
+# Im Virtual Environment
+pip install -e .
+instagram-downloader --help
+```
+
+**💡 Tipp:** Siehe `QUICKSTART.md` für detaillierte Installationsanweisungen!
+
+## 🚀 Schnellstart
 
 ### 1. Instagram-Datenexport vorbereiten
 
-Stelle sicher, dass deine Instagram-JSON-Dateien hier liegen:
-```
-data/skymuss/saved/saved_posts.json
-data/skymuss/likes/liked_posts.json
-```
-
-### 2. Skript ausführen
-
-```bash
-python instagram_downloader.py
-```
-
-### 3. Download-Prozess
-
-Das Skript:
-1. Lädt beide JSON-Dateien
-2. Kombiniert alle Posts (Saved + Liked)
-3. Prüft, welche bereits heruntergeladen wurden
-4. Lädt fehlende Medien mit Fortschrittsbalken
-5. Speichert Metadaten in CSV
-
-### 4. Bei Unterbrechung fortsetzen
-
-Einfach Skript erneut starten! Die Resume-Funktion überspringt automatisch alle bereits heruntergeladenen Dateien.
-
-```bash
-python instagram_downloader.py  # Fährt automatisch fort!
-```
-
-## 📁 Verzeichnisstruktur
+Lade deinen Instagram-Datenexport herunter und stelle sicher, dass er diese Struktur hat:
 
 ```
-instagram-export/
-├── instagram_downloader.py          # Hauptskript
-├── README.md                         # Diese Datei
-├── requirements.txt                  # Python-Dependencies
+instagram-media-downloader/
 ├── data/
-│   └── skymuss/
+│   └── skymuss/              # Dein Username
 │       ├── saved/
-│       │   └── saved_posts.json     # Gespeicherte Posts
+│       │   └── saved_posts.json     # Gespeicherte Posts (Bookmarks)
 │       └── likes/
 │           └── liked_posts.json     # Gelikte Posts
-├── downloads/                        # 📥 Heruntergeladene Medien
-│   ├── 1766401968_tha_truth_7.31.mp4
-│   ├── 1766401009_focus_szn_.mp4
-│   └── ...
-├── state/
-│   └── downloaded.txt               # Tracking (für Resume)
-└── instagram_metadata.csv           # 📊 Metadaten-Export
 ```
 
-## 📊 CSV-Metadaten
+**Instagram-Daten herunterladen:**
+1. Instagram → Einstellungen → Konto-Center → Deine Informationen und Berechtigungen
+2. "Informationen herunterladen" → JSON-Format auswählen
+3. Warte auf E-Mail mit Download-Link
+4. Entpacke Daten in `data/` Ordner
 
-Die generierte `instagram_metadata.csv` enthält:
+### 2. Tool verwenden
 
-| Spalte      | Beschreibung                        |
-|-------------|-------------------------------------|
-| `source`    | "saved" oder "liked"               |
-| `title`     | Instagram-Username des Erstellers  |
-| `timestamp` | Unix-Timestamp                     |
-| `datetime`  | Lesbare Datumszeit                 |
-| `url`       | Original Instagram-URL             |
-| `filename`  | Lokaler Dateiname                  |
-| `media_type`| "video" oder "image"               |
+```bash
+# Gelikte Posts herunterladen
+python3 -m instagram_downloader liked
 
-## 🎯 Dateinamen-Format
+# Gespeicherte Posts (Bookmarks)
+python3 -m instagram_downloader saved
 
-Alle Dateien folgen diesem Schema:
+# Alles herunterladen
+python3 -m instagram_downloader all
 ```
-{timestamp}_{username}.{ext}
 
-Beispiele:
-- 1766401968_tha_truth_7.31.mp4
-- 1765495433_thebrainmaze.jpg
+## 📖 Verwendung
+
+### Grundlegende Syntax
+
+```bash
+# Nach Installation mit pip
+instagram-downloader <command> [optionen]
+
+# Ohne Installation (direkt als Modul)
+python3 -m instagram_downloader <command> [optionen]
+```
+
+### Verfügbare Commands
+
+| Command | Beschreibung |
+|---------|-------------|
+| `saved` | Lädt gespeicherte Posts (Bookmarks) herunter |
+| `liked` | Lädt gelikte Posts herunter |
+| `own` | Lädt eigene Posts herunter |
+| `all` | Lädt alle drei Kategorien herunter |
+
+### CLI-Optionen
+
+#### Konfiguration
+
+```bash
+-u, --username USERNAME        Instagram-Username
+-d, --data-dir PATH           Verzeichnis mit Instagram-Export
+-o, --output-dir PATH         Ziel-Verzeichnis für Downloads
+-c, --config PATH             Pfad zu Konfigurationsdatei (.ini)
+```
+
+#### Download-Optionen
+
+```bash
+--delay SECONDS               Verzögerung zwischen Downloads (Standard: 1.0)
+--max-retries N               Max. Wiederholungsversuche (Standard: 3)
+--timeout SECONDS             Timeout für Downloads (Standard: 60)
+--no-csv                      CSV-Export deaktivieren
+```
+
+#### Logging
+
+```bash
+--log-level LEVEL             Log-Level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+--log-file PATH               Pfad zur Log-Datei
+--no-log-file                 Keine Log-Datei erstellen
+```
+
+### Beispiele
+
+#### Mit eigenem Username
+
+```bash
+python3 -m instagram_downloader liked --username mein_username
+```
+
+#### Mit angepasster Verzögerung (bei Rate-Limits)
+
+```bash
+python3 -m instagram_downloader saved --delay 2.5
+```
+
+#### Mit Debug-Logging
+
+```bash
+python3 -m instagram_downloader all --log-level DEBUG
+```
+
+#### Mit Konfigurationsdatei
+
+```bash
+# 1. Beispiel-Konfiguration kopieren
+cp config.example.ini config.ini
+
+# 2. In config.ini Username und Pfade anpassen
+
+# 3. Verwenden
+python3 -m instagram_downloader saved --config config.ini
+```
+
+#### Custom Ausgabe-Verzeichnis
+
+```bash
+python3 -m instagram_downloader liked --output-dir /mnt/externe-festplatte/instagram
+```
+
+#### Nur neue Downloads (Resume)
+
+```bash
+# Wird automatisch fortgesetzt - bereits heruntergeladene Dateien werden übersprungen
+python3 -m instagram_downloader liked
 ```
 
 ## ⚙️ Konfiguration
 
-Du kannst im Skript folgendes anpassen:
+### Via Umgebungsvariablen
 
-```python
-# Delay zwischen Requests (Zeile 42)
-REQUEST_DELAY = 0.8  # Sekunden (erhöhen bei Rate-Limits)
+```bash
+export INSTAGRAM_USERNAME="mein_username"
+export DATA_DIR="/pfad/zum/instagram-export/data"
+export DOWNLOAD_DIR="/pfad/zum/output"
+export REQUEST_DELAY="1.5"
+export MAX_RETRIES="5"
+export LOG_LEVEL="DEBUG"
 
-# Download-Verzeichnis (Zeile 29)
-DOWNLOAD_DIR = BASE_DIR / "downloads"
+python3 -m instagram_downloader liked
 ```
+
+### Via Config-Datei
+
+Erstelle `config.ini`:
+
+```ini
+[DEFAULT]
+username = mein_username
+data_dir = /pfad/zum/data
+download_dir = /pfad/zum/output
+request_delay = 1.5
+max_retries = 3
+log_level = INFO
+csv_export = true
+```
+
+Verwenden:
+
+```bash
+python3 -m instagram_downloader saved --config config.ini
+```
+
+## 📁 Verzeichnisstruktur
+
+Nach der Installation und ersten Nutzung:
+
+```
+instagram-media-downloader/
+├── instagram_downloader/       # Python-Package
+│   ├── __init__.py
+│   ├── __main__.py
+│   ├── cli.py                 # CLI-Interface
+│   ├── config.py              # Konfiguration
+│   ├── downloader.py          # Download-Logik
+│   └── logger.py              # Logging
+├── data/                      # Instagram-Export-Daten
+│   └── skymuss/
+│       ├── saved/
+│       ├── likes/
+│       └── posts/
+├── downloads/                 # Heruntergeladene Medien
+│   ├── saved/                # Gespeicherte Posts
+│   ├── liked/                # Gelikte Posts
+│   └── own/                  # Eigene Posts
+├── state/                    # Resume-State-Dateien
+│   ├── saved_downloaded.txt
+│   ├── liked_downloaded.txt
+│   └── own_downloaded.txt
+├── logs/                     # Log-Dateien
+│   └── instagram_downloader_*.log
+├── config.example.ini        # Beispiel-Konfiguration
+├── setup.py                  # Installation
+├── requirements.txt          # Dependencies
+└── README.md                 # Diese Datei
+```
+
+## 📊 CSV-Metadaten
+
+Für jede Kategorie wird eine CSV-Datei erstellt:
+
+- `instagram_saved_metadata.csv`
+- `instagram_liked_metadata.csv`
+- `instagram_own_metadata.csv`
+
+**Format:**
+
+| Spalte | Beschreibung |
+|--------|-------------|
+| source | Kategorie (saved, liked, own) |
+| title | Instagram-Username des Erstellers |
+| timestamp | Unix-Timestamp |
+| datetime | Lesbare Datumszeit |
+| url | Original Instagram-URL |
+| filename | Lokaler Dateiname |
+| media_type | video oder image |
 
 ## 🔧 Fehlerbehebung
 
-### Instagram blockiert Zugriffe
+### yt-dlp nicht gefunden
 
-**Problem:** Zu viele Requests zu schnell  
-**Lösung:** `REQUEST_DELAY` auf 1.5-2 Sekunden erhöhen
+**Problem:** `yt-dlp ist nicht installiert!`
 
-### "Keine Medien-URL gefunden"
+**Lösung:**
+```bash
+# System-weite Installation (empfohlen)
+sudo apt update
+sudo apt install yt-dlp
 
-**Ursachen:**
-- Post wurde gelöscht
-- Privater Account
-- Instagram hat HTML-Struktur geändert
+# Oder im Virtual Environment
+pip install yt-dlp
 
-**Lösung:** Diese Posts werden übersprungen (siehe Log)
-
-### Bestimmte Dateien re-downloaden
-
-1. Datei aus `downloads/` löschen
-2. URL aus `state/downloaded.txt` entfernen
-3. Skript neu starten
-
-## 📈 Statistiken
-
-Nach Abschluss siehst du:
-```
-📊 DOWNLOAD ABGESCHLOSSEN
-======================================================================
-✅ Erfolgreich:   150
-⏭️ Übersprungen:  20
-❌ Fehlgeschlagen: 5
-📁 Speicherort:   /home/skymuss/projects/instagram-export/downloads
-📊 CSV-Metadaten: /home/skymuss/projects/instagram-export/instagram_metadata.csv
-======================================================================
+# Verifizieren
+yt-dlp --version
 ```
 
-## ⚡ Performance-Tipps
+### Rate-Limits von Instagram
 
-1. **Paralleler Download** (aktuell nicht implementiert) - Könnte beschleunigen
-2. **Caching** - `state/downloaded.txt` nie löschen!
-3. **Netzwerk** - Stabile Internetverbindung verwenden
+**Problem:** Viele Downloads schlagen fehl
 
-## 🛡️ Wichtige Hinweise
+**Lösung:** Erhöhe die Verzögerung:
+```bash
+python3 -m instagram_downloader saved --delay 2.5
+# oder sogar
+python3 -m instagram_downloader saved --delay 5.0
+```
 
-⚠️ **Instagram Terms of Service** - Stelle sicher, dass du nur deine eigenen Daten herunterlädst  
-⚠️ **Rate Limits** - Bei zu vielen Requests kann Instagram temporär blockieren  
-⚠️ **Datenschutz** - Die heruntergeladenen Daten sind deine persönlichen Exporte  
+### JSON-Datei nicht gefunden
 
-## 📝 To-Do / Erweiterungen
+**Problem:** `JSON-Datei nicht gefunden`
 
-- [ ] Paralleles Herunterladen (mit ThreadPoolExecutor)
-- [ ] Carousel-Posts (mehrere Bilder pro Post)
-- [ ] Bessere Fehlerbehandlung für gelöschte Posts
-- [ ] Automatisches Retry bei Netzwerkfehlern
-- [ ] GUI-Version (optional)
+**Lösung:** Überprüfe die Pfade und Username:
+```bash
+python3 -m instagram_downloader liked --data-dir /korrekter/pfad/zum/data --username dein_username
 
-## 🐛 Bugs melden
+# Oder setze Umgebungsvariablen
+export INSTAGRAM_USERNAME="dein_username"
+export DATA_DIR="/korrekter/pfad/zum/data"
+python3 -m instagram_downloader liked
+```
 
-Bei Problemen bitte Issue erstellen mit:
-- Fehlermeldung
-- Python-Version (`python --version`)
-- Beispiel-URL (ohne persönliche Daten)
+### Downloads schlagen fehl
+
+**Mögliche Ursachen:**
+- Posts wurden gelöscht
+- Account ist privat
+- Netzwerkprobleme
+- Instagram-Änderungen
+
+**Lösung:** Logs prüfen in `logs/` Verzeichnis
+
+### Resume nach Unterbrechung
+
+Einfach den gleichen Befehl erneut ausführen:
+```bash
+python3 -m instagram_downloader liked
+# Überspringt automatisch bereits heruntergeladene Dateien
+# basierend auf state/liked_downloaded.txt
+```
+
+## 🐛 Development
+
+### Entwicklungsumgebung einrichten
+
+```bash
+# Virtual Environment erstellen
+python -m venv venv
+source venv/bin/activate  # Linux/macOS
+# oder
+venv\Scripts\activate  # Windows
+
+# Development-Installation
+pip install -e ".[dev]"
+```
+
+### Tests ausführen
+
+```bash
+pytest tests/
+```
+
+### Code-Formatierung
+
+```bash
+black instagram_downloader/
+```
+
+### Linting
+
+```bash
+flake8 instagram_downloader/
+```
+
+## 📝 Direkte Ausführung (empfohlen)
+
+Das Tool kann direkt als Python-Modul ausgeführt werden, ohne Installation:
+
+```bash
+# Tool-Hilfe anzeigen
+python3 -m instagram_downloader --help
+
+# Verschiedene Kommandos
+python3 -m instagram_downloader saved
+python3 -m instagram_downloader liked
+python3 -m instagram_downloader own
+python3 -m instagram_downloader all
+```
+
+Dies ist die **empfohlene Methode**, da sie keine Installation erfordert.
+
+## 🛡️ Hinweise
+
+⚠️ **Instagram Terms of Service** - Nutze dieses Tool nur für deine eigenen Daten  
+⚠️ **Rate Limits** - Respektiere Instagram's Server-Limits  
+⚠️ **Datenschutz** - Heruntergeladene Medien sind deine persönlichen Backups  
+⚠️ **Keine Garantie** - Instagram kann HTML-Struktur jederzeit ändern  
 
 ## 📄 Lizenz
 
-Für persönlichen Gebrauch. Kein Support für kommerziellen Einsatz.
+MIT License - Für persönlichen Gebrauch. Siehe [LICENSE](LICENSE) für Details.
+
+## 🤝 Contributing
+
+Contributions sind willkommen! Bitte erstelle einen Pull Request oder öffne ein Issue.
+
+## 📧 Support
+
+Bei Problemen bitte ein GitHub Issue erstellen mit:
+- **Fehlermeldung** (vollständiger Stacktrace)
+- **Python-Version:** `python3 --version`
+- **yt-dlp Version:** `yt-dlp --version`
+- **Verwendeter Befehl** (z.B. `python3 -m instagram_downloader liked`)
+- **Log-Ausgabe** (aus `logs/` Verzeichnis)
+- **Betriebssystem** (Ubuntu, macOS, etc.)
+
+Siehe auch `QUICKSTART.md` und `INSTALLATION.md` für häufige Probleme.
+
+## 🎯 Roadmap
+
+- [ ] Parallele Downloads (ThreadPoolExecutor)
+- [ ] GUI-Version (optional)
+- [ ] Docker-Image
+- [ ] Carousel-Posts (mehrere Medien pro Post)
+- [ ] Stories-Support
+- [ ] Filter nach Datum/Kategorie
+- [ ] Automatische Deduplizierung
+
+## ⭐ Changelog
+
+### Version 2.0.0 (2026-01-29)
+
+- ✨ Komplette Überarbeitung zu professionellem CLI-Tool
+- ✨ Separate Ordner für saved/liked/own
+- ✨ Konfigurationssystem (CLI/ENV/Config-File)
+- ✨ Professionelles Logging mit Farben
+- ✨ Retry-Mechanismus mit exponential backoff
+- ✨ Setup.py für pip-Installation
+- ✨ Umfassende Dokumentation
+- ✨ Production-ready Code-Qualität
+
+### Version 1.0.0
+
+- Initiale Version mit grundlegenden Features
 
 ---
 
-**Entwickelt mit ❤️ für deine Instagram-Sammlung**
+**Entwickelt mit ❤️ für Instagram-Sammler**

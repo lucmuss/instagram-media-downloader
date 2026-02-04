@@ -1,0 +1,78 @@
+[project]
+name = "instagram-media-downloader"
+version = "2.0.0"
+authors = [
+    { name = "skymuss", email = "your.email@example.com" }
+]
+description = "Professional CLI tool for downloading Instagram media (Saved, Liked, Own)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Internet",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "tqdm>=4.66.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "python-dotenv>=1.0.0"
+]
+
+[project.scripts]
+instagram-downloader = "instagram_downloader.cli:main"
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+src = ["instagram_downloader"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "A",    # flake8-builtins
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+]
+ignore = ["E203", "E501", "E402", "F401"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+
+[tool.setuptools.packages.find]
+exclude = ["docker*"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"

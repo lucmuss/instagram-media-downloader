@@ -1,15 +1,17 @@
 """
 Instagram Media Downloader
-===========================
-Ein professionelles CLI-Tool zum Herunterladen von Instagram-Medien.
 
-Unterstützt:
-- Eigene Posts
-- Gespeicherte Posts (Bookmarks)
-- Gelikte Posts
+Ein professionelles CLI-Tool zum Herunterladen von Instagram-Medien aus deinem Datenexport.
 
-Autor: skymuss
-Version: 2.0.0
+Unterstützte Funktionen:
+- Herunterladen eigener Instagram-Posts.
+- Herunterladen gespeicherter Instagram-Posts (Bookmarks).
+- Herunterladen gelikter Instagram-Posts.
+
+Autor:
+    skymuss
+Version:
+    2.0.0
 """
 
 __version__ = "2.0.0"

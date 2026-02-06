@@ -21,11 +21,11 @@ wheels/
 *.egg
 MANIFEST
 
-# Virtual Environment
+# Virtual environment
 venv/
 env/
 ENV/
-.venv
+.venv/
 
 # IDEs
 .vscode/
@@ -34,17 +34,17 @@ ENV/
 *.swo
 *~
 
-# Instagram Data
+# Instagram data
 data/
 downloads/
 state/
 logs/
 
-# Konfiguration
+# Configuration
 config.ini
 .env
 
-# CSV Exports
+# CSV exports
 *.csv
 
 # OS
@@ -60,4 +60,7 @@ htmlcov/
 .ruff_cache/
 
 # uv
-.uv
+.uv/
+
+# Local tooling
+.cline/

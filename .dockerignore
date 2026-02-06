@@ -1,0 +1,16 @@
+.git
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.build
+.dist
+.eggs
+*.egg-info
+.env
+data
+state
+logs
+.github
+.cline

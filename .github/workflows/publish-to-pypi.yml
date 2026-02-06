@@ -1,0 +1,68 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      target:
+        type: choice
+        description: Publish target
+        options:
+          - pypi
+          - testpypi
+        default: testpypi
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      UV_PROJECT_ENVIRONMENT: .venv
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v1
+        with:
+          version: "latest"
+
+      - name: Create venv
+        run: uv venv
+
+      - name: Sync dependencies
+        run: uv sync --extra dev --frozen
+
+      - name: Build distributions
+        run: uv run --with build python -m build
+
+      - name: Publish
+        env:
+          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+          TEST_PYPI_API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            export TWINE_REPOSITORY_URL="https://upload.pypi.org/legacy/"
+            export TWINE_PASSWORD="$PYPI_API_TOKEN"
+          else
+            if [ "${{ inputs.target }}" = "pypi" ]; then
+              export TWINE_REPOSITORY_URL="https://upload.pypi.org/legacy/"
+              export TWINE_PASSWORD="$PYPI_API_TOKEN"
+            else
+              export TWINE_REPOSITORY_URL="https://test.pypi.org/legacy/"
+              export TWINE_PASSWORD="$TEST_PYPI_API_TOKEN"
+            fi
+          fi
+
+          if [ -z "$TWINE_PASSWORD" ]; then
+            echo "Missing API token"
+            exit 1
+          fi
+
+          export TWINE_USERNAME="__token__"
+          uv run --with twine twine upload --non-interactive dist/*

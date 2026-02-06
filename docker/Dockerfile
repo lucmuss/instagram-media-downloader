@@ -1,27 +1,23 @@
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.cargo/bin:$PATH"
 
-# Copy project files
-COPY pyproject.toml ./
-COPY instagram_downloader/ ./instagram_downloader/
+ENV UV_PROJECT_ENVIRONMENT=/app/.venv
+ENV PATH="/app/.venv/bin:/root/.cargo/bin:$PATH"
 
-# Install dependencies
-RUN uv sync --no-dev
+COPY pyproject.toml uv.lock ./
+COPY src/ ./src/
 
-# Copy entrypoint
+RUN uv venv
+RUN uv sync --no-dev --frozen
+
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Set entrypoint
 ENTRYPOINT ["/entrypoint.sh"]

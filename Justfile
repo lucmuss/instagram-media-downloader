@@ -14,24 +14,33 @@ dev:
 
 # Formats code (Ruff)
 format:
-    uv run ruff format instagram_downloader/
-    uv run ruff check --fix instagram_downloader/
+    uv run ruff format src tests
+    uv run ruff check --fix src tests
 
 # Checks code quality (read-only)
 lint:
-    uv run ruff check instagram_downloader/
-    uv run ruff format --check instagram_downloader/
+    uv run ruff check src tests
+    uv run ruff format --check src tests
+    uv run --with black black --check src tests
+    uv run --with flake8 flake8 src tests
 
 # Type checking
 typecheck:
-    uv run mypy instagram_downloader/
+    uv run mypy src
 
 # Runs tests
 test:
     uv run pytest
 
+# Builds distributions
+build:
+    uv run --with build python -m build
+
 # Complete quality check (CI simulation)
 check: lint typecheck test
+
+# Full local CI (includes build)
+ci: lint typecheck test build
 
 # Starts Docker container (deployment testing)
 docker-up:

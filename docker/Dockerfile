@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -11,13 +11,13 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV UV_PROJECT_ENVIRONMENT=/app/.venv
 ENV PATH="/app/.venv/bin:/root/.cargo/bin:$PATH"
 
-COPY pyproject.toml uv.lock ./
-COPY src/ ./src/
+COPY pyproject.toml uv.lock /app/
 
-RUN uv venv
-RUN uv sync --no-dev --frozen
+RUN uv venv && uv sync --frozen --no-dev --no-install-project
 
-COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY . /app
 
-ENTRYPOINT ["/entrypoint.sh"]
+RUN uv sync --frozen --no-dev
+RUN chmod +x /app/docker/entrypoint.sh /app/scripts/bootstrap.sh
+
+ENTRYPOINT ["/app/docker/entrypoint.sh"]

@@ -5,12 +5,29 @@ default:
 
 # Initializes the project (uv-based)
 setup:
-    uv sync --all-extras
+    uv venv
+    uv sync --extra dev
     cp -n .env.example .env || true
 
-# Starts development environment (fast prototyping)
+# Runs bootstrap steps locally
 dev:
-    bash docker/entrypoint.sh
+    bash scripts/bootstrap.sh all
+
+# Bootstrap shortcuts (single source of truth: scripts/bootstrap.sh)
+bootstrap:
+    bash scripts/bootstrap.sh all
+
+bootstrap-load-env:
+    bash scripts/bootstrap.sh load_env
+
+bootstrap-prepare-dirs:
+    bash scripts/bootstrap.sh prepare_dirs
+
+bootstrap-test:
+    bash scripts/bootstrap.sh run_tests
+
+bootstrap-info:
+    bash scripts/bootstrap.sh show_info
 
 # Formats code (Ruff)
 format:
@@ -55,4 +72,5 @@ docker-down:
 clean:
     find . -type d -name "__pycache__" -exec rm -rf {} +
     find . -type f -name "*.pyc" -delete
-    rm -rf .pytest_cache .coverage htmlcov .ruff_cache
+    find . -type d -name "*.egg-info" -exec rm -rf {} +
+    rm -rf .pytest_cache .coverage htmlcov .ruff_cache build dist

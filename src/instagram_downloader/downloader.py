@@ -10,7 +10,7 @@ import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 from tqdm import tqdm
 
@@ -36,7 +36,7 @@ class MediaItem:
         self.filename: Optional[str] = None
         self.media_type: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> dict[str, str]:
         """Convert the item to a CSV-friendly dictionary."""
         return {
             "source": self.source,
@@ -119,7 +119,7 @@ class InstagramDownloader:
 
     def download_with_ytdlp(
         self, url: str, output_template: str, max_retries: Optional[int] = None
-    ) -> Tuple[bool, Optional[str]]:
+    ) -> tuple[bool, Optional[str]]:
         """Download media with yt-dlp and retry on failure."""
         if max_retries is None:
             max_retries = self.config.max_retries
@@ -191,9 +191,9 @@ class InstagramDownloader:
 
         return False, None
 
-    def parse_json_data(self, json_path: Path, category: str) -> List[MediaItem]:
+    def parse_json_data(self, json_path: Path, category: str) -> list[MediaItem]:
         """Parse JSON export data into MediaItem objects."""
-        items: List[MediaItem] = []
+        items: list[MediaItem] = []
 
         if not json_path.exists():
             self.logger.warning("JSON file not found: %s", json_path)
@@ -221,9 +221,9 @@ class InstagramDownloader:
 
         return items
 
-    def _parse_saved_posts(self, data: Dict) -> List[MediaItem]:
+    def _parse_saved_posts(self, data: dict) -> list[MediaItem]:
         """Parse saved posts from export data."""
-        items: List[MediaItem] = []
+        items: list[MediaItem] = []
         try:
             for item in data.get("saved_saved_media", []):
                 title = item.get("title", "untitled")
@@ -237,9 +237,9 @@ class InstagramDownloader:
 
         return items
 
-    def _parse_liked_posts(self, data: Dict) -> List[MediaItem]:
+    def _parse_liked_posts(self, data: dict) -> list[MediaItem]:
         """Parse liked posts from export data."""
-        items: List[MediaItem] = []
+        items: list[MediaItem] = []
         try:
             for item in data.get("likes_media_likes", []):
                 title = item.get("title", "untitled")
@@ -254,9 +254,9 @@ class InstagramDownloader:
 
         return items
 
-    def _parse_own_posts(self, data: Dict) -> List[MediaItem]:
+    def _parse_own_posts(self, data: dict) -> list[MediaItem]:
         """Parse own posts from export data."""
-        items: List[MediaItem] = []
+        items: list[MediaItem] = []
         for item in data.get("posts", []):
             title = item.get("title", "untitled")
             timestamp = item.get("creation_timestamp", 0)
@@ -267,7 +267,7 @@ class InstagramDownloader:
 
         return items
 
-    def export_to_csv(self, items: List[MediaItem], csv_file: Path) -> None:
+    def export_to_csv(self, items: list[MediaItem], csv_file: Path) -> None:
         """Export media metadata to CSV."""
         try:
             with open(csv_file, "w", newline="", encoding="utf-8") as handle:

@@ -7,7 +7,7 @@ authors = [
 description = "Professional CLI tool for downloading Instagram media"
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "MIT" }
+license = "MIT"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: End Users/Desktop",
@@ -41,7 +41,7 @@ instagram-downloader = "instagram_downloader.cli:main"
 
 [tool.ruff]
 line-length = 100
-target-version = "py38"
+target-version = "py39"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
@@ -70,7 +70,7 @@ skip-magic-trailing-comma = false
 
 [tool.black]
 line-length = 100
-target-version = ["py38", "py39", "py310", "py311", "py312"]
+target-version = ["py39", "py310", "py311", "py312"]
 
 [tool.mypy]
 python_version = "3.11"

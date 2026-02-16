@@ -30,10 +30,10 @@ Install yt-dlp if needed:
 sudo apt install yt-dlp
 ```
 
-You can also install yt-dlp via pip, but system packages are recommended:
+Alternatively, install it via uv tool management:
 
 ```
-uv run pip install yt-dlp
+uv tool install yt-dlp
 ```
 
 ## Instagram Export Data
@@ -168,9 +168,11 @@ just typecheck
 just test
 just check
 just ci
+just bootstrap
 ```
 
 The `just ci` target runs lint, typecheck, tests, and build locally.
+Bootstrap is centralized in `scripts/bootstrap.sh` and can be run via `just bootstrap`.
 
 ## Docker
 
@@ -209,6 +211,7 @@ See `docs/release.md` and `docs/git-workflow.md` for the full checklist and git 
 ```
 ./
 src/instagram_downloader
+scripts
 tests
 docs
 examples

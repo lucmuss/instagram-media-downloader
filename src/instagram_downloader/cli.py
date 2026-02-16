@@ -4,7 +4,7 @@
 import argparse
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from . import __version__
 from .config import Config
@@ -128,7 +128,7 @@ def print_summary(downloader: InstagramDownloader, download_dir: Path) -> None:
         print("  - If rate limited, retry later")
 
 
-def main(argv: Optional[List[str]] = None) -> None:
+def main(argv: Optional[list[str]] = None) -> None:
     """Main CLI entrypoint."""
     parser = create_parser()
     args = parser.parse_args(argv)
@@ -159,13 +159,13 @@ def main(argv: Optional[List[str]] = None) -> None:
             print("\nERROR: yt-dlp is not installed or not in PATH")
             print("\nInstallation:")
             print("  sudo apt install yt-dlp")
-            print("  # or via pip:")
-            print("  uv run pip install yt-dlp")
+            print("  # oder via uv:")
+            print("  uv tool install yt-dlp")
             sys.exit(1)
 
         logger.info("yt-dlp detected")
 
-        categories: List[str]
+        categories: list[str]
         if args.command == "all":
             categories = [
                 downloader.MEDIA_CATEGORY_SAVED,
